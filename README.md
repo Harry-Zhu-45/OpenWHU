@@ -1,10 +1,20 @@
 # [WHU课代表计划 - 武汉大学课程资料整理](https://openwhu.github.io/)
 
-## 友链|Friend Links
+## 友链 | Friend Links
 
-[WHU.sb](https://www.whu.sb/) 发现最好的课程，分享你的学习体验
+<ul>
+<li>
+<img src="https://www.whu.sb/favicon.ico" width="16">
+<a href="https://www.whu.sb/"><strong>WHU.sb</strong></a><br>
+<span>发现最好的课程，分享你的学习体验</span>
+</li>
 
-[WHUCAO](https://github.com/WHUCodingAndOpen) 武大编程交流与开源社区
+<li>
+<img src="https://avatars.githubusercontent.com/u/131381256?s=200&v=4" width="16">
+<a href="https://github.com/WHUCodingAndOpen"><strong>WHUCAO</strong></a><br>
+<span>武大编程交流与开源社区</span>
+</li>
+</ul>
 
 ## 前言|Preface
 
