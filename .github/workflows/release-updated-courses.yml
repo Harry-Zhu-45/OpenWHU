@@ -181,6 +181,12 @@ jobs:
               # 所有空白字符替换成下划线，包括普通空格
               name = re.sub(r"\s+", "_", name)
 
+              # gh release upload 会把 file#label 里的半角 # 当作资产显示名分隔符，
+              # 导致 "数据结构（C#）.zip" 被截断成 "数据结构（C"。
+              # 这里用全角井号 ＃ 替换：gh 不会对它做分隔，且能完整保留语义，
+              # 避免把 # 直接换成 _ 而和 "数据结构（C）" 等课程产生重名。
+              name = name.replace("#", "＃")
+
               # release asset 文件名中不适合出现的字符也替换掉
               name = re.sub(r'[\\/:*?"<>|]+', "_", name)
 
