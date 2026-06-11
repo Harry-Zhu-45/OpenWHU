@@ -205,8 +205,16 @@ jobs:
           ]
 
           def sanitize_slug(text: str) -> str:
+              text = text.strip()
+              # 先把编程语言符号转成可读单词，否则 #、++ 会被当特殊字符抹掉，
+              # 导致 数据结构（C）/（C#）/（C++）净化后同名、只能靠哈希区分。
+              text = re.sub(r"(?i)c\+\+", "Cpp", text)
+              text = re.sub(r"(?i)c#", "CSharp", text)
+              text = re.sub(r"(?i)f#", "FSharp", text)
+              text = re.sub(r"(?i)\.net", "DotNet", text)
+              text = text.replace("#", "Sharp").replace("++", "PlusPlus")
               # 只保留 GitHub 资产名允许的字符 [A-Za-z0-9._-]，其余折叠成下划线
-              text = re.sub(r"[^A-Za-z0-9]+", "_", text.strip())
+              text = re.sub(r"[^A-Za-z0-9]+", "_", text)
               text = re.sub(r"_+", "_", text).strip("._")
               return text[:80]
 
@@ -223,7 +231,21 @@ jobs:
               payload = json.dumps({
                   "model": "deepseek-chat",
                   "messages": [
-                      {"role": "system", "content": "You translate Chinese university course names into concise English. Reply with ONLY the English course name in Title Case. No quotes, no explanation, no trailing punctuation."},
+                      {"role": "system", "content": (
+                          "You translate Chinese university (Wuhan University) course names into concise English. "
+                          "Reply with ONLY the English course name in Title Case, no quotes, no explanation, no trailing punctuation. "
+                          "ALWAYS preserve any parenthetical qualifier and keep it in parentheses in the output, because it tells which "
+                          "school/department, campus, programming language, or class type the materials belong to. "
+                          "Your reply must use ONLY ASCII letters, digits and spaces, because GitHub release asset "
+                          "names allow only [A-Za-z0-9._-] and silently drop everything else. Render programming-language "
+                          "symbols as ASCII words: C# as CSharp, C++ as Cpp, F# as FSharp, .NET as DotNet; plain C stays C; "
+                          "Java and Python unchanged. "
+                          "Translate these Wuhan University school abbreviations using this glossary: "
+                          "计院 = CS School; 网安/网安院 = Cyber Science School; 电信院/電信 = Electronic Info School; "
+                          "新传院 = Journalism School; 信息安全 = Information Security; 快班 = Fast Track; 慢班 = Slow Track. "
+                          "Example: 算法设计与分析(计院) -> Algorithm Design and Analysis (CS School); "
+                          "数据结构（C#） -> Data Structures (CSharp)."
+                      )},
                       {"role": "user", "content": name},
                   ],
                   "temperature": 0,
@@ -444,7 +466,7 @@ jobs:
                 course-slugs.json|manifest.json) continue ;;
               esac
               echo "deleting stale asset: $asset"
-              gh release delete-asset "$RELEASE_TAG" "$asset" -y || true
+              gh release delete-asset "$RELEASE_TAG" -y -- "$asset" || true
             done
 
       - name: Upload archives and metadata
